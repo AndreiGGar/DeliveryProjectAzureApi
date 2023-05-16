@@ -1,18 +1,30 @@
+using Azure.Security.KeyVault.Secrets;
 using DeliveryProjectAzureApi.Context;
 using DeliveryProjectAzureApi.Helpers;
 using DeliveryProjectAzureApi.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAzureClients(factory =>
+{
+    factory.AddSecretClient(builder.Configuration.GetSection("KeyVault"));
+});
+
+SecretClient secretClient = builder.Services.BuildServiceProvider().GetService<SecretClient>();
+KeyVaultSecret keyVaultSecret = await secretClient.GetSecretAsync("DeliveryAzureDb");
+
+string azureKeys = keyVaultSecret.Value;
+
 builder.Services.AddSingleton<HelperOAuthToken>();
 HelperOAuthToken helper = new HelperOAuthToken(builder.Configuration);
 builder.Services.AddAuthentication(helper.GetAuthenticationOptions()).AddJwtBearer(helper.GetJwtOptions());
-string connectionString = builder.Configuration.GetConnectionString("SqlAzure");
+/*string connectionString = builder.Configuration.GetConnectionString("SqlAzure");*/
 builder.Services.AddTransient<RepositoryDelivery>();
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(azureKeys));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

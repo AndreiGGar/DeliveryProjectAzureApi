@@ -77,6 +77,14 @@ namespace DeliveryProjectAzureApi.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<List<Product>> GetProductsAsync()
+        {
+            var query = from products in context.Products
+                        select products;
+
+            return await query.ToListAsync();
+        }
         #endregion
 
         #region Purchases and cart
@@ -110,16 +118,19 @@ namespace DeliveryProjectAzureApi.Repositories
             await this.context.SaveChangesAsync();
         }
 
-        public async Task InsertPurchaseAsync(int id, int userid, int restaurantId, decimal totalprice, string status, bool delivery, DateTime requestdate, string? deliveryaddress, string deliverymethod, string? code, string products, string paymentMethod)
+        public async Task InsertPurchaseAsync(int userid, int restaurantId, decimal totalprice, string status, bool delivery, DateTime requestdate, string? deliveryaddress, string deliverymethod, string? code, string products, string paymentMethod)
         {
             Purchase purchase = new Purchase();
-            purchase.Id = id;
+            purchase.Id = this.GetMaxIdPurchase();
             purchase.UserId = userid;
             purchase.RestaurantId = restaurantId;
+            purchase.Coupon = 0;
+            purchase.ShippingFee = null;
             purchase.TotalPrice = totalprice;
             purchase.Status = status;
             purchase.Delivery = delivery;
             purchase.RequestDate = requestdate;
+            purchase.CompletedDate = null;
             if (deliveryaddress != null)
             {
                 purchase.DeliveryAddress = deliveryaddress;

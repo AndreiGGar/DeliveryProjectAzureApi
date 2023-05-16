@@ -14,7 +14,7 @@ namespace DeliveryProjectAzureApi.Repositories
         /*Task<List<Product>> GetProductsCartAsync(List<int> ids);*/
         int GetMaxIdPurchase();
         Task InsertPurchaseProductAsync(int idpurchase, int idproduct, int quantity);
-        Task InsertPurchaseAsync(int id, int userid, int restaurantId, decimal totalprice, string status, bool delivery, DateTime requestdate, string? deliveryaddress, string deliverymethod, string? code, string products, string paymentMethod);
+        Task InsertPurchaseAsync(int userid, int restaurantId, decimal totalprice, string status, bool delivery, DateTime requestdate, string? deliveryaddress, string deliverymethod, string? code, string products, string paymentMethod);
         int GetMaxIdUser();
         Task RegisterUser(string email, string name, string password, string rol, DateTime dateAdd, string image);
         /*User LoginUser(string email, string encryptedPassword);
