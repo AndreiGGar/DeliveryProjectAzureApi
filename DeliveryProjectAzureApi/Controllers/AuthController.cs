@@ -62,5 +62,13 @@ namespace DeliveryProjectAzureApi.Controllers
             await this.repo.RegisterUser(model.Email, model.Name, model.Password, model.Rol, model.dateAdd, model.Image);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("[action]/{username}")]
+        public async Task<ActionResult<User>> FindUser(string username)
+        {
+            User user = await this.repo.FindUserAsync(username);
+            return user;
+        }
     }
 }
